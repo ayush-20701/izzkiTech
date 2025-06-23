@@ -1,0 +1,56 @@
+{
+  "books": [
+    {
+      "book_id": "1234",
+      "title": "White Nights",
+      "author": "FD",
+      "isbn": "810983208",
+      "category": "Novel",
+      "total_copies": 5,
+      "available_copies": 4,
+      "issued_to": [
+        "42423"
+      ]
+    },
+    {
+      "book_id": "2373",
+      "title": "White nights",
+      "author": "FD",
+      "isbn": "287392dhe82",
+      "category": "novel",
+      "total_copies": 4,
+      "available_copies": 3,
+      "issued_to": [
+        "12345"
+      ]
+    }
+  ],
+  "members": [
+    {
+      "member_id": "42423",
+      "name": "Ayush",
+      "email": "ayushkr20701@gmail.com",
+      "phone": "13269174",
+      "issued_books": [
+        "1234"
+      ],
+      "join_date": "2025-06-11",
+      "member_type": "Student",
+      "student_id": "42432",
+      "course": "B.Tech"
+    },
+    {
+      "member_id": "12345",
+      "name": "Ayush",
+      "email": "akjsdhf@akjd",
+      "phone": "8871987439",
+      "issued_books": [
+        "2373"
+      ],
+      "join_date": "2025-06-12",
+      "member_type": "Student",
+      "student_id": "797293",
+      "course": "btech"
+    }
+  ]
+}
