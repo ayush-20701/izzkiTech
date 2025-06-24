@@ -1,54 +1,68 @@
-import './App.css'
-import { useState } from 'react';
+import './App.css';
+import { useState, useEffect } from 'react';
+import AuthForm from './components/AuthForm';
+import Header from './components/Header';
+import ChatInterface from './components/ChatInterface';
 
 function App() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    const userMsg = { sender: 'user', text: input };
-    setMessages((prev) => [...prev, userMsg]);
+  // Check if user is already logged in on app load
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        // Clear invalid data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+    setLoading(false);
+  }, []);
 
-    const res = await fetch('http://localhost:5000/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: input }),
-    });
-
-    const data = await res.json();
-    const botMsg = { sender: 'bot', text: data.reply };
-    setMessages((prev) => [...prev, botMsg]);
-    setInput('');
+  // Handle successful authentication
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
   };
 
-  return (
-    <div className="h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-xl bg-white rounded-xl shadow-md p-4 flex flex-col h-[80vh]">
-        <div className="flex-1 overflow-y-auto space-y-2">
-          {messages.map((msg, i) => (
-            <div key={i} className={`p-2 rounded ${msg.sender === 'user' ? 'bg-blue-100 text-right' : 'bg-gray-200 text-left'}`}>
-              {msg.text}
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 flex">
-          <input
-            type="text"
-            className="flex-1 border border-gray-300 rounded-l p-2 focus:outline-none"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          />
-          <button className="bg-blue-500 text-white px-4 rounded-r" onClick={handleSend}>
-            Send
-          </button>
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
+    );
+  }
+
+  // Show auth form if user is not logged in
+  if (!user) {
+    return <AuthForm onAuthSuccess={handleAuthSuccess} />;
+  }
+
+  // Show main app interface if user is logged in
+  return (
+    <div className="h-screen bg-gray-100 flex flex-col">
+      <Header user={user} onLogout={handleLogout} />
+      <ChatInterface user={user} onLogout={handleLogout} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
