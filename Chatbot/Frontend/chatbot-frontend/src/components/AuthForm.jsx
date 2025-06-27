@@ -13,7 +13,7 @@ const AuthForm = ({ onAuthSuccess }) => {
 
   // Email validation function
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
