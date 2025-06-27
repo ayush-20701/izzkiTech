@@ -96,7 +96,7 @@ const AuthForm = ({ onAuthSuccess }) => {
         };
 
     try {
-      const res = await fetch(`https://chatbot-backend-4-puvp.onrender.com${endpoint}`, {
+      const res = await fetch(`https://chatbot-backend-4-puvp.onrender.com/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

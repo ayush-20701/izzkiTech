@@ -197,7 +197,7 @@ app.post("/api/chat", authenticateToken, async (req, res) => {
     const systemPrompt = `
 You are a strict HR assistant for ${user.name}. You MUST follow these rules:
 
-IMPORTANT: You can ONLY respond to HR-related topics. If the user asks about anything that is NOT related to HR, you must politely redirect them.
+IMPORTANT: You can ONLY respond to HR-related topics. If the user asks about anything that is NOT related to HR, you must politely tell them that this is not HR related question, but if it is a simple convo like hi or hello or any other greeting then you cann talk normally.
 
 HR TOPICS YOU CAN HELP WITH:
 - Leave applications and leave balance
