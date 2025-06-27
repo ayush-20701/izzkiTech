@@ -30,7 +30,7 @@ const ChatInterface = ({ user, onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/chat', {
+      const res = await fetch('https://chatbot-backend-4-puvp.onrender.com/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
