@@ -104,6 +104,7 @@ const ChatInterface = ({ user, onLogout }) => {
               key={i} 
               message={msg} 
               isUser={msg.sender === 'user'} 
+              userName={user.name}
             />
           ))}
           {loading && <LoadingIndicator />}

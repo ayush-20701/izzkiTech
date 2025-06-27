@@ -1,9 +1,18 @@
-const Message = ({ message, isUser }) => {
+const Message = ({ message, isUser, userName }) => {
   const formatTime = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    const words = name.trim().split(' ');
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+    return words[0].charAt(0).toUpperCase() + words[words.length - 1].charAt(0).toUpperCase();
   };
 
   return (
@@ -13,7 +22,7 @@ const Message = ({ message, isUser }) => {
         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
           isUser ? 'bg-blue-500' : 'bg-gray-500'
         }`}>
-          {isUser ? 'U' : 'AI'}
+          {isUser ? getUserInitials(userName) : 'AI'}
         </div>
         
         {/* Message bubble */}

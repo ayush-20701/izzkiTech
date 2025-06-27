@@ -10,11 +10,64 @@ const AuthForm = ({ onAuthSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // Email validation function
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Password validation function
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
+  // Name validation function
+  const validateName = (name) => {
+    return name.trim().length >= 2;
+  };
+
+  // Validate form fields
+  const validateForm = () => {
+    const errors = {};
+
+    if (!isLogin) {
+      // Name validation for signup
+      if (!validateName(formData.name)) {
+        errors.name = 'Name must be at least 2 characters long';
+      }
+    }
+
+    // Email validation
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address (e.g., user@example.com)';
+    }
+
+    // Password validation
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (!isLogin && !validatePassword(formData.password)) {
+      errors.password = 'Password must be at least 6 characters long';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setValidationErrors({});
+
+    // Validate form before submission
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
 
     const endpoint = isLogin ? '/api/login' : '/api/register';
     const payload = isLogin 
@@ -48,10 +101,19 @@ const AuthForm = ({ onAuthSuccess }) => {
   };
 
   const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors({
+        ...validationErrors,
+        [name]: ''
+      });
+    }
   };
 
   return (
@@ -82,9 +144,14 @@ const AuthForm = ({ onAuthSuccess }) => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    validationErrors.name ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   required
                 />
+                {validationErrors.name && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -113,23 +180,34 @@ const AuthForm = ({ onAuthSuccess }) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                validationErrors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
               required
             />
+            {validationErrors.email && (
+              <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+            )}
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
+              {!isLogin && <span className="text-xs text-gray-500 ml-1">(min. 6 characters)</span>}
             </label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                validationErrors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
               required
             />
+            {validationErrors.password && (
+              <p className="mt-1 text-sm text-red-600">{validationErrors.password}</p>
+            )}
           </div>
 
           <button
@@ -146,6 +224,7 @@ const AuthForm = ({ onAuthSuccess }) => {
             onClick={() => {
               setIsLogin(!isLogin);
               setError('');
+              setValidationErrors({});
             }}
             className="text-blue-600 hover:text-blue-800 text-sm"
           >
