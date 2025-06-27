@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const ChatInput = ({ onSendMessage, loading }) => {
   const [input, setInput] = useState('');
+  const inputRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -10,6 +11,13 @@ const ChatInput = ({ onSendMessage, loading }) => {
     onSendMessage(input.trim());
     setInput('');
   };
+
+  // Auto-focus input field when loading changes from true to false (after bot response)
+  useEffect(() => {
+    if (!loading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loading]);
 
   const quickActions = [
     "Check my leave balance",
@@ -27,7 +35,11 @@ const ChatInput = ({ onSendMessage, loading }) => {
           {quickActions.map((action, index) => (
             <button
               key={index}
-              onClick={() => setInput(action)}
+              onClick={() => {
+                setInput(action);
+                // Focus input after setting quick action
+                setTimeout(() => inputRef.current?.focus(), 0);
+              }}
               className="text-xs px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition duration-200"
               disabled={loading}
             >
@@ -40,6 +52,7 @@ const ChatInput = ({ onSendMessage, loading }) => {
       {/* Input Form */}
       <form onSubmit={handleSubmit} className="flex space-x-2">
         <input
+          ref={inputRef}
           type="text"
           className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
           value={input}
